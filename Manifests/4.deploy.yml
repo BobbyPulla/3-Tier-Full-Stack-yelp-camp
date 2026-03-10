@@ -2,15 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: yelp-camp-deployment
+  namespace: webapps
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: yelp-camp
+
   template:
     metadata:
       labels:
         app: yelp-camp
+
     spec:
       affinity:
         podAntiAffinity:
@@ -22,13 +25,16 @@ spec:
 
       containers:
         - name: yelp-camp-container
-          image: shaikmustafa/finalcamp:v1
+          image: bobbypulla/eks:latest
           ports:
             - containerPort: 3000
 
-          envFrom:
-            - secretRef:
-                name: yelp-camp-secrets
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yelp-camp-secrets
+                  key: DB_URL
 
           resources:
             requests:
